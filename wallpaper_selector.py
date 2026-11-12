@@ -9,13 +9,14 @@ from zoneinfo import ZoneInfo, ZoneInfoNotFoundError
 
 
 IMAGE_PATH = Path(__file__).resolve().parent / "images"
-FRAMES_PATH = IMAGE_PATH / "frames"
-FRAME_COUNT = 500
-DAWN_FRAME = 90
-SUNRISE_FRAME = 110
-SOLAR_NOON_FRAME = 250
-SUNSET_FRAME = 390
-DUSK_FRAME = 410
+FRAMES_PATH = IMAGE_PATH / "frames-2000"
+LEGACY_FRAMES_PATH = IMAGE_PATH / "frames"
+FRAME_COUNT = 2000
+DAWN_FRAME = 360
+SUNRISE_FRAME = 440
+SOLAR_NOON_FRAME = 1000
+SUNSET_FRAME = 1560
+DUSK_FRAME = 1640
 
 
 def solar_terms(moment):
@@ -100,14 +101,18 @@ def frame_number(now, latitude, longitude, zone):
 
 def wallpaper_path(frame):
     if FRAMES_PATH.is_dir():
-        return FRAMES_PATH / f"frame_{frame:03d}.jpg"
+        return FRAMES_PATH / f"frame_{frame:04d}.jpg"
+
+    legacy_frame = frame // 4
+    if LEGACY_FRAMES_PATH.is_dir():
+        return LEGACY_FRAMES_PATH / f"frame_{legacy_frame:03d}.jpg"
 
     cutoffs = (100, 142, 212, 289, 359, 420)
     originals = (
         "night.png", "sunrise.png", "morning.png", "noon.png",
         "evening.png", "sunset.png", "night.png",
     )
-    return IMAGE_PATH / originals[bisect_right(cutoffs, frame)]
+    return IMAGE_PATH / originals[bisect_right(cutoffs, legacy_frame)]
 
 
 def set_wallpaper(path):
